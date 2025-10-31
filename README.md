@@ -28,9 +28,12 @@ and testing. Once satisfied, copy the voice model files to the PC where N1MM+ ru
 
 I need to thank Claude AI and ChatGPT for assistance! Claude was awesome for developing
 the scripts. I still had to troubleshoot, but it would have taken weeks for me
-to write them. Be careful with ChatGPT, it only remembers so far back into the chat.
+to write them from scratch. Be careful with ChatGPT, it only remembers so far back into the chat.
 It will rewrite parts of the script that worked. Also, thanks to K3CT and PE1EEC for
 their help.
+
+If you get stuck, consult my extensive notes in docs/piper-stu.txt. There are little
+tidbits in there that may help.
 
 # Getting Started
 
