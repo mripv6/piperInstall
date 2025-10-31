@@ -52,7 +52,9 @@ the python environment.
 # Convert the epoch file
 This utility was built by PE1EEC. It converts the old ryan checkpoint file
 to a newer format. This utility may go away as piper gpl improves or different
-checkpoint files are created
+checkpoint files are created. The script will bring up a GUI. Navigate to the
+checkpoint file under lightning_logs, version_0 and checkpoints. Select the 
+file. Then navigate back to the same directory to store the processed file.
 
 ```
 python checkpoint_convert.py
