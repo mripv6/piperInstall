@@ -80,9 +80,12 @@ config file will training over 500 epochs, which takes my computer about 45 minu
 python -m piper.train fit --config training.yaml
 ```
 
+If you get any errors, you may have missing files or directories.
+
 # Test the model
 Use the followig utility to export the voice model to onnx format, gather the
-config json file, rename the voice model files and develop a test wav file.
+config json file, rename the voice model files and develop a test wav file. ONNX
+is a standard format for voice models and stands fro Open Neural Network Exchange.
 
 ```
 python export_and_test.py --name w7iy \
@@ -100,8 +103,9 @@ python say_something.py
 ```
 
 # Copy voice model to PC with N1MM
-Copy the onnx and json file to the piperModel subdirectory on your PC. This voice
-model should show up in the N1MM configuration after a N1MM restart. I use a USB stick.
+Copy the onnx and json files in the my-model directory to the piperModel 
+subdirectory on your PC. This voice model should show up in the N1MM configuration 
+after a N1MM restart. I use a USB stick.
 
 # Files included:
 
