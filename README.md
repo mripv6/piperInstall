@@ -48,7 +48,7 @@ python record.py
 cp ~/piper1-gpl/my-training/wav/* ~/piper1-gpl/dataset/
 ```
 
-# train the model
+# Train the model
 Finally! The following command trains the voice model. You can tweak the 
 values in the training.yaml file, if needed. These values worked for me based
 on info from Claude and the resources available in my system. The existing
@@ -58,7 +58,7 @@ config file will training over 500 epochs, which takes my computer about 45 minu
 python -m piper.train fit --config training.yaml
 ```
 
-# test the model
+# Test the model
 Use the followig utility to export the voice model to onnx format, gather the
 config json file, rename the voice model files and develop a test wav file.
 
