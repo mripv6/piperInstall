@@ -48,6 +48,10 @@ training dataset. Once you're happy with the wav files, clear out the exisiting
 data set and copy everying from the my-training/wav directory to the dataset 
 directory. This utility also creates the metadata.csv file required by piper.
 
+The utility uses TK for the GUI. The user interface is simple and should be
+intuitive. You can delete wav files during the review. Run the script again
+to re-record missing files.
+
 ```
 python record.py
 cp ~/piper1-gpl/my-training/wav/* ~/piper1-gpl/dataset/
@@ -58,6 +62,13 @@ I chose the sound card to connect to the microphone in Sound Preferences. The le
 were set pretty high, but I avoided clipping. The utility trims silence from
 the beginning and end. It also normalizes the wav file so all files have the
 same volume level.
+
+Note - I'm still experimenting with training sentences. K3CT uses 7, but my research
+shows I should use many more. You can change the sentences in 'sentences.txt'.
+Whatever you do, make sure you emphasis words related to those you want to use in
+N1MM. For example, if you have a sentence like CQ Contest - say it like you do
+during a contest. That way the inflection in the text to speech file will turn
+out great.
 
 # Train the model
 Finally! The following command trains the voice model. You can tweak the 
