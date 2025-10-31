@@ -1,0 +1,509 @@
+Building piper voice models for N1MM on Linux
+
+================================
+Introduction
+================================
+
+My goal is to run the training sessions on my high perfomance Linux-based computer because my
+ham radio Windows PC is a wimpy Beelink. Plus, I wanted to use a later version of python and the most recent version of pytorch. These instructions are based on John's (K3CT) instructions and a bunch of additional research. I initially used his wav generation program to create the training wav files. Then, I used Claude AI to create my own app with the ability to use an external file to hold the training sentences. Through some research I discovered I need a lot more than 7 sentences to train the model so 
+the model produces sounds like my voice. To me, this project produced really fine results.
+
+Another goal was to use the latest version of Piper. The training procedure is very similar to the 
+previous process. However, I discovered there is a licensing issue. The latest version of piper is
+licensed under GPL, which has a copy-left clause. Meaning the source code for other projects that 
+are derived from piper has to be released into the public domain. I think embedding espeak-ng into
+the code sort of forced the issue. Individuals can use this code, but N1MM can't. The voice models 
+developed using this process can still be used in N1MM.  
+
+My Linux computer runs Linux Mint version 22. This is based on Ubuntu version 22.04. I started testing
+using a VirtualBox Virtual Machine and finished on bare metal in order to take advantage of my GEFORCE
+RTX 4060TI GPU. Using a GPU (CUDA) is not necessary. 
+
+You're driving toward the ability to enter a single command for taining, waiting about an hour and 
+testing a wav file. Once satistifed, you'll copy the voice model to N1MM directories and set up your
+TTS/piper macros.
+
+Overview of the training steps:
+
+1. Set up the python environment - do once
+    Install Python 3.13.
+    Clone and Build OHF version of piper.
+    Set up the directory structure.
+    Download the starting checkpoint file from Huggin Face (via web) and convert.
+    Set up CUDA for your GPU. (Optional)
+2. Record training files and copy to the right directory.
+3. Train and test the Voice.
+    Export and Test
+
+Once you set up the environment, you can repeat steps 2 and 3 until you're satisfied. I decided to
+record many more sentences/wav files for training. As a result, my model is much better. However, I 
+had to record different wav files to place emphasis on certain words such as 'contest' and 'thanks'.
+This allowed the model to develop phrases sounding more like those used during contests as opposed
+to just speaking in a converstation.
+
+
+================================
+Install Python 3.13
+================================
+
+Version 3.13 is the latest version of python that will work with piper. (The constraint arises because
+Numba only works with 3.13 and earlier) So don't install newer versions of python. Version 3.13 
+End of Life is in 2029. This provides more time that using version 3.10.
+
+There are other packages to install, but they are specific to each section. Instead of installing them here, I provide instructions to install them when they are required.
+
+# Install python 3.13 and other required packages.
+
+sudo apt update && sudo apt upgrade
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+sudo apt install ffmpeg build-essential git
+sudo apt install python3.13 python3.13-dev python3.13-venv
+sudo apt install python3.13-tk
+
+# Check that python 3.13 was installed
+ls /usr/bin/python* -> You should see phython3.13 listed
+
+Note: python3.13-tk is required for the checkpoint conversion utility and wav recrording app 
+described later in this document. Here the package is installed globally.
+
+## Activate virutal environment
+We use a virtual python environment so all code is self contained in a single directory.
+
+python3.13 -m venv ~/piper1-gpl/src/python/.venv
+
+## Switch to virtual environment. Use this every time you open a terminal.
+source ~/piper1-gpl/src/python/.venv/bin/activate
+
+
+==================================
+Clone and Build OHF piper
+==================================
+
+# Clone the development environment and build
+
+This uses scikit-build-core along with cmake to build a Python module that directly embeds espeak-ng.
+
+## Get required files
+sudo apt update
+sudo apt install cmake ninja-build
+
+## clone into piper1-gpl subdirectory
+git clone https://github.com/OHF-voice/piper1-gpl.git
+cd ~/piper1-gpl
+
+## Switch to virtual environment. Use this every time you open a terminal
+source ~/piper1-gpl/src/python/.venv/bin/activate
+
+## build:
+
+These steps take a while to complete
+
+python -m pip install -e .[dev] -> installs development dependencies
+python -m pip install -e .[train] -> installs training dependencies
+
+./build_monotonic_align.sh -> build cython extensions
+
+Do a dev build:
+
+python setup.py build_ext --inplace
+
+Run piper to test:
+
+python -m piper --help
+
+You should see some help directions, which indicates piper code has been installed. Now build.
+
+python -m build
+
+## Overide torch version
+
+I had to drop back to torch version 2.8.0 from the default 2.9.0 because the export function
+didn't work. I also needed torch audio for the callback file created later in these instructions. 
+
+python -m pip install torch==2.8.0
+python -m pip install torchaudio==2.8.0
+
+## quick test:
+
+python3 -m piper.train --help
+
+OK - python and piper have been installed. Ready to use.
+
+
+=====================================================
+Setup the directory structure
+=====================================================
+
+Setup the directories we will use.
+
+mkdir ~/piper1-gpl/dataset          ; meta data and training wavs go here
+mkdir ~/piper1-gpl/my-training      ; home for config.json
+mkdir ~/piper1-gpl/my-model         ; model output will go here
+mkdir ~/piper1-gpl/cache            ; just a cache directory
+mkdir ~/piper1-gpl/audio_samples    ; callback wav files during testing
+mkdir -p ~/piper1-gpl/lightning_logs/version_0/checkpoints  ; inital checkpoint file
+
+Note, in K3CT's instructions the lightning_log files were under my-training. Not so here.
+
+
+============================================
+Get the checkpoint file and convert it
+============================================
+
+# Get the RyanCheckpoint voice from Hugging Face web site. 
+
+This is the inital voice model we will start tweaking to match our voice. Using a checkpoint
+saves a lot of time because we are not starting from scratch. Note the location for the lightning_logs 
+has changed from the K3CT instructions. Once you get the checkpoint file, it has to be converted to use with the latest version of piper training. For that, we use Martin's conversion utility.
+
+cd ~/piper1-gpl/my-training/lightning_logs/version_0/checkpoints
+
+wget https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/epoch%3D4641-step%3D3104302.ckpt
+
+cd ~/piper1-gpl/my-training
+
+wget https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/config.json
+
+Note: the wget command and paramters are all one line even though the may show up as two lines
+in this text file.
+
+cd ~/piper1-gpl
+
+# Convert the checkpoint file
+
+Unfortunately, this checkpoint file was made with an older version of torch. So it has to be converted.
+Here is a link to the temporary fix by PE1EEC (Martin):
+
+## Create the utility
+
+https://pe1eec.eu/contest/piper-tts-checkpoint-file/
+
+Read the page and create the utility. 
+
+sudo apt install python3.13-tk -> should be already installed
+copy the code from Martin's page into a file called checkpoint_convert.py
+
+Edit checkpoint_convert.py to:
+   comment out the Monkey-patch class definition
+   comment out the line path.lib.PosixPath = PosixPathWindows
+
+Those edits allow the program to run under Linux instead of Windows 11.
+
+## Run the conversion program:
+
+python -m checkpoint_convert
+
+Keep the processed file in ~/piper1-gpl/my-training/lightning_logs/version_0/checkpoints
+
+Use the new checkpoint file name for training.
+
+
+=====================================================
+Making the WAV files
+=====================================================
+
+I used Claude to build a python application to help record the wav files
+and create the metadata.csv file required by piper. The application uses
+TK and the default audio input device. 
+
+I used a Heil microphone and behringer external sound card connected to 
+a USB port on my Linux computer. The volume levels on the sound card and
+Linux audio apps were almost maxed out. 
+
+Here's the workflow for recording the wav files.
+
+- Read in an external file with training sentences.
+- Present the sentence to you.
+- Press Start to start recording
+    A 'LED' will let you know if the level is correct.
+    The sentence is highlighted in red to let you know you are recording
+- Press Stop to stop the recording and advance to the next sentence
+- When done, press Review. This will allow you to listen to each wav file
+    Decide to keep or delete the file.
+
+The app will offer you sentences for missing files. For example, if you 
+decide to delete 003.wav the next time you run the app you will be 
+presented with the sentence for 003.
+
+The wav files are trimmed and normalized to the same level. The metadata.csv
+file is created in the same wav subdirectory. This file is required by piper for training.
+
+The default sentence file is 'sentence.txt'. You can change this using
+command line switches.
+
+Put the app in the ~/piper1-gpl directory and get the dependencies.
+
+cd ~/piper1-gpl
+pip install sounddevice tkinter
+
+Now run the app.
+
+python record.py
+
+Copy the wav and metadata files to ~/piper1-gpl/dataset.
+
+cd wav
+cp * ~/piper1-gpl/dataset
+
+
+==================================
+Train the Voice Model
+==================================
+
+Finally! The meat of the process starts here.
+
+Here's how you train the new voice. I used my GPU with CUDA to speed things up, but
+but cpu worked just fine. Had to install CUDA toolkit before using gpu. Instead of running
+a command with all the command line switches, use a configure YAML file. The general idea
+is to create the config file, run the training and test the model. This section covers
+the training.
+
+# Create configuration YAML file.
+
+Note, YAML files are space sensitive. Values were derived from research. YAML file indentation
+is critical. Use spaces, not tabs.
+
+cd ~/piper1-gpl
+nano training.yaml 
+
+=== File Begin ===
+trainer:
+  accelerator: "cuda"
+  log_every_n_steps: 5
+  max_epochs: 6201
+  precision: 16-mixed
+#  callbacks:
+#    - class_path: audio_logger_callback.AudioLoggerCallback
+#      init_args:
+#        log_every_n_steps: 30
+#        save_to_disk: true
+#        output_dir: "/data/home/stu/piper1-gpl/audio_samples"
+    - class_path: debug_callback.DebugCallback
+
+data:
+  voice_name: "w7iy"
+  csv_path: /data/home/stu/piper1-gpl/dataset/metadata.csv
+  audio_dir: /data/home/stu/piper1-gpl/dataset/
+  espeak_voice: "en-us"
+  cache_dir: /data/home/stu/piper1-gpl/cache/
+  config_path: /data/home/stu/piper1-gpl/my-training/config.json
+  batch_size: 32
+  num_workers: 8
+
+model:
+  sample_rate: 22050
+
+ckpt_path: /data/home/stu/piper1-gpl/my-training/lightning_logs/version_0/checkpoints/processed-epoch=4641-step=3104302.ckpt
+==== EOF ====
+
+Don't include the File Begin and EOF markers. The # symbols are comments. You can choose to delete
+those lines. I left them in to show how you might debug the call back.
+
+Note the last line in the file is ckpt_path, which points to the checkpoint file downloaded and converted
+from Hugginsface. This is a single line even though it's wrapped in this document.
+
+The max_epochs has to be equal to the epoch specified in the checkpoint plus your max. In the example
+above, the training will run from 4641 to 6201 then stop.
+
+# Setup Callback file. (Experimental)
+These steps are optional. However, they will allow you to to save audio files
+in Tensorboard log and produce wav files. The wav files will be stored in ~/piper1-gpl/audio_samples.
+
+I used Claude to develop the callback file, but I still had to do some troubleshooting. torch and torchaudio version 2.8.0 should have been installed earlier in these instructions. If not:
+
+cd ~/piper1-gpl
+python -m pip install torch==2.8.0
+python -m pip install torchaudio==2.8.0
+
+Copy audio_logger_callback.py to the ~/piper1-gpl directory
+
+Ensure the callback stanzas in the YAML file match above.
+
+## Note: You may want to set log_every_n_steps: in the YAML file to a smaller number to make 
+sure everything works. Then change it back to something like 30 or 50 for the long term training.
+You'll see audio in the Tensorboard Audio page and wav files in in ~/piper1-gpl/audio_samples. Note, 
+the wav files are overwritten on subsequent runs.
+
+# START THE TRAINING:
+After all this stuff - you can finally start the training! Use the export script described in the
+next section to test the model during training.
+
+python -m piper.train fit --config training.yaml
+
+## Odd note: I ran into a Weight=False error when I created these instructions on a VM. But - I was
+running torch 2.9.0. When I downgraded to torch 2.8.0, this problem went away. I can't recall
+where I fixed this issue when running 2.9.0.
+
+## If you're running the callback feature to log to Tensorboard, you'll see audio clips in Tensorboard
+after many steps have been completed. You'll also see wav files in ~/piper1-gpl/audio_samples. (Experimental)
+
+
+========================================
+Export to ONNX file, Test and Copy to PC
+========================================
+
+# Testing methods
+
+Either trudge through the manual process or use the export script. You need to export the checkpoint
+file to create the onnx file, which can be used by N1MM. ONNX (Open Neural Network Exchange) is a 
+standard file format for voice models.
+
+Once you have your onnx and json file ready to go, you can also try out the online demo at:
+
+https://rhasspy.github.io/piper-samples/demo.html
+
+Upload your two files, type in a sentence and hear what your voice! Guess the trade off is your 
+giving piper your onnx files.
+
+## Note: Exporting failed with torch 2.9.0, Fix, which should have already been accomplished earlier in 
+these instructions:
+ 
+python -m pip install torch==2.8.0
+
+## Odd note - You may be tempted to search for the file to set dynamo=True. Don't because that essentially uses the newer code, which fails at the moment.
+
+# Using the Export script (export_and_test.py)
+
+Claude and I built a utility that will find the latest checkpoint, export the onnx, move the
+files to ~/piper1-gpl/my-models, rename the files and produce a test wave file. This is so
+much easier than doing this by hand. Note the model files in ~/piper1-gpl/my-model will be
+overwritten.
+
+python export_and_test.py --name w7iy \
+  --text "CQ Contest! Whiskey 4 november fox, whiskey four november foxtrot!"
+
+There are many other command line options to change the sythesis. If you get an error when
+you run the script during training, just run it again. It means the script was deleted
+before export took place.
+
+Then use aplay to listen to the wav file:
+
+aplay ./my-model/test_w7iy.wav
+
+If everything is OK, copy the two key files to the N1MM piper directory on the PC. Use a USB 
+stick.
+
+cd ~/piper1-gpl/my-model
+cp *.onnx /path/to/USB stick
+cp *.json /path/to/USB stick
+
+
+# Manual Method
+
+## Find the last checkpoint
+ls -l ~/piper1-gpl/lightning_logs
+
+## Remove old files in my-model
+rm ~/piper1-gpl/my-model/*.onnx
+rm ~/piper1-gpl/my-model/*.json
+cd ~/piper1-gpl
+
+Look for the directory with the highest version number. Note the directory is not under my-training.
+Replace the # symbol in the commands below with the number. For example, you may see version_2. Use 2. 
+Also, pick a name for the onnx file. Below, I chose en_US-W7IY.onnx
+
+## Export
+python3 -m piper.train.export_onnx \
+  --checkpoint ~/piper1-gpl/lightning_logs/version_#/checkpoints/*.ckpt \
+  --output-file ~/piper1-gpl/my-model/en_US-W7IY.onnx
+
+### Copy the config file
+
+cd ~/piper1-gpl/my-model
+cp ~/piper1-gpl/my-training/config.json ~/piper1-gpl/my-model/en_US-W7IY.onnx.json
+
+ls ~/piper1-gpl/my-model
+
+You should see two files: en_US-W7IY.onnx and en_US-W7IY.config.json The first part of the file
+name must be the same.
+
+## Move these two files the Windows 11 PC!
+
+Copy these two files to the PiperModelFiles subdirectory on the Windows N1MM subdirectory. The
+new voice should show up on the pull down menu. 
+
+## Using the model in a command line
+
+Here's how to test the model using piper from a command line.
+
+cd ~/piper1-gpl/my-models
+
+echo "This is a test sentence" | piper --model /path/to/your/checkpoint --output_file test.wav
+
+
+=========================================
+Install and Run Tensorboard (Optional)
+=========================================
+
+You may want to monitor progress using Tensorboard. See also the training section for instructions of obtaining the audio within Tensorboard. You should create the audio_logger_callback.py file before
+you start training. The callback will allow you to play the latest version of audio from Tensorboard.
+
+# Install and Run
+pip install tensorboard
+tensorboard --logdir ~/piper1-gpl/lightning_logs --port 6006
+
+# Now open a Windows browser and enter this URL:
+http://localhost:6006
+
+## Training Loss (loss_d and loss_g graphs)
+This represents the error or discrepancy between the model's predictions and the actual 
+target values on the training dataset. A decreasing training loss generally indicates 
+that the model is learning from the training data.
+
+# Callback
+The callback doesn't seem to be working at the momement.
+
+==================================
+Setup CUDA (Optional)
+==================================
+
+I installed CUDA tool kit and used the latest nvidia drivers included with Mint. This 
+changed the processing time from 0.4 it/s to 1.82 it/s. So a good improvement. My 
+system is Linux Mint 22, which is based on Ubuntu 22.04. If your system is different, the installation instructions may be different. This section provides some general notes. Follow the 
+published instructions.
+
+My card: GEFORCE RTX-4060TI, architecture 8.9
+
+# Installing CUDA Toolkit:
+
+Main URL
+https://developer.nvidia.com/how-to-cuda-c-cpp
+
+Followed these instructions for Linux,x86_64, Ubuntu, 2204, deb(network)
+
+https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
+Installed nvidia-open as per instructions in NVIDIA Driver Installation Guide
+
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-13-0
+
+# Installing nvida driver: [ Note - don't do this because it screws up the drivers.]
+
+sudo apt install nvidia-open
+
+I initially installed the nvidia-open driver and ended up with a bunch of conflicts. By consulting
+Claude I was able to figure out a solution. The solution was to purge all things nvidia and reinstall
+the nvidia driver that comes with linux. 
+
+# Verify installation:
+
+nvdia-smi -> look for CUDA version. (13.0) 
+
+Verified available in python:
+python3
+>>> import torch
+>>> torch.cuda.is_available()
+>>> TRUE
+>>> CTL-D
+
+Make sure the training.yaml file uses the 'cuda' accelerator. Start the training session and look for:
+
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+HPU available: False, using: 0 HPUs
+
+nvida-smi will also show that python is consuming memory.
+

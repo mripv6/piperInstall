@@ -1,0 +1,36 @@
+trainer:
+  accelerator: cuda
+  log_every_n_steps: 5
+  precision: 16-mixed
+  max_epochs: 5241
+#  callbacks:
+#    - class_path: audio_logger_callback.MultiTextAudioLoggerCallback
+#      init_args:
+#        log_every_n_steps: 100
+#        save_to_disk: true
+#        output_dir: "/data/home/stu/piper1-gpl/audio_samples"
+#        validation_text: "whiskey 7 india yankee"
+#    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+#      init_args:
+#        every_n_epochs: 100
+#        save_top_k: 3  # Save all checkpoints (or use 3 to keep only best 3)
+#        filename: "processed-{epoch}-{step}"
+
+#  callbacks:
+#    - class_path: debug_callback.DebugCallback
+
+data:
+  voice_name: "w7iy"
+  csv_path: dataset/metadata.csv
+  audio_dir: dataset
+  espeak_voice: "en-us"
+  cache_dir: cache/
+  config_path: my-training/config.json
+  validation_split: 0.0
+  batch_size: 8
+  num_workers: 2
+
+model:
+  sample_rate: 22050
+
+ckpt_path: /data/home/stu/piper1-gpl/lightning_logs/version_0/checkpoints/processed-epoch=4641-step=3104302.ckpt
