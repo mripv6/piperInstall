@@ -18,6 +18,11 @@ I learned more. I also created several scripts to help automate tasks. Hopefully
 this will be as easy as installing the environment, recording wav files, training
 and testing. Once satisfied, copy the voice model files to the PC where N1MM+ runs.
 
+I need to thank Claude AI and ChatGPT for assistance! Claude was awesome for developing
+the scripts. I still had to troubleshoot, but it would have taken weeks for me
+to write them. Be careful with ChatGPT, it only remembers so far back into the chat.
+It will rewrite parts of the script that worked.
+
 # Getting Started
 
 Clone this repository into your home directory. Then run the installation
