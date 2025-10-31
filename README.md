@@ -94,7 +94,11 @@ config file will training over 500 epochs, which takes my computer about 45 minu
 python -m piper.train fit --config training.yaml
 ```
 
-If you get any errors, you may have missing files or directories.
+If you get any errors, you may have missing files or directories. There are some
+experimental callbacks that can be used in order to expose the trained audio
+file to Tensorboard. But I'm not sure they are working correctly. Until they are
+provent to work, you can still export and test during training using the export
+script.
 
 # Test the model
 Use the followig utility to export the voice model to onnx format, gather the
