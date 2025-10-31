@@ -1,35 +1,52 @@
-# Clone the installation repo into your computer
+Set up Piper Training Environment for N1MM
+==========================================
 
-# Unpack tar file
-cd ~
-mkdir temp
-cp piper-w7iy.tar.gz temp
-cd temp
-tar xvf piper-w7iy.tar.gz
+This script sets up the environment for recording, training, exporting 
+and testing the piper voice model. I decided to use python 3.13 and the GPL
+version of piper. The resulting voice model will be compatible
+with the MIT licensed version of piper used in N1MM. These scripts have
+been tested under Linux Mint 22. They may work under other versions
+of linux and perhaps Windows WSL.
 
-#Run setup script
-Run the install script. This script sets up the environment for recording,
-training, exporting and testing the piper voice model. This uses the GPL
-version of piper and python 3.13. The resulting voice model will be compatible
-with the MIT licensed version of piper used in N1MM.
+Training a model using 45 sentences takes about 45 minutes on my Linux computer, 
+which has a RTX4060TI GPU and 16 thread CPU. I decided to use more sentences
+than the standard 7 used by K3CT.
 
+Consult the file piper-stu.txt for detailed information. That file was started
+using the instuctions from K3CT. I modifed and added to the instructions as
+I learned more. I also created several scripts to help automate tasks. Hopefully,
+this will be as easy as installing the environment, recording wav files, training
+and testing. Once satisfied, copy the voice model files to the PC where N1MM+ runs.
+
+# Getting Started
+
+Clone this repository into your home directory. Then run the installation
+shell script.
+
+```
 install.sh
+```
 
 # Convert the epoch file
 This utility was built by PE1EEC. It converts the old ryan checkpoint file
-to a newer format. This utility may go away as piper gpl improves. Or different
+to a newer format. This utility may go away as piper gpl improves or different
 checkpoint files are created
 
+```
 python checkpoint_convert.py
+```
 
-# record the wav files
+# Record the wav files
 Use this utility to record wav files used for training. The wav files are
 placed in my-training/wav so you don't accidentally write over your existing
-training dataset. Once you're happy with the wav files, copy everying from the
-my-training/wav directory to the dataset directory.
+training dataset. Once you're happy with the wav files, clear out the exisiting
+data set and copy everying from the my-training/wav directory to the dataset 
+directory. This utility also creates the metadata.csv file required by piper.
 
+```
 python record.py
 cp ~/piper1-gpl/my-training/wav/* ~/piper1-gpl/dataset/
+```
 
 # train the model
 Finally! The following command trains the voice model. You can tweak the 
@@ -37,22 +54,28 @@ values in the training.yaml file, if needed. These values worked for me based
 on info from Claude and the resources available in my system. The existing
 config file will training over 500 epochs, which takes my computer about 45 minutes.
 
+```
 python -m piper.train fit --config training.yaml
+```
 
 # test the model
 Use the followig utility to export the voice model to onnx format, gather the
 config json file, rename the voice model files and develop a test wav file.
 
+```
 python export_and_test.py --name w7iy \
   --text "CQ Contest! Whiskey 4 november fox, whiskey four november foxtrot!"
 
 aplay ./my-model/test_w7iy.wav
+```
 
 After you run this script, you can create test wav files by modifying the 
 say_something.py script. Then run. This is a good example of using the voice
 model in a python script.
 
+```
 python say_something.py
+```
 
 # Copy voice model to PC with N1MM
 Copy the onnx and json file to the piperModel subdirectory on your PC. This voice
