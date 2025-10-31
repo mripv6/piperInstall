@@ -53,6 +53,12 @@ python record.py
 cp ~/piper1-gpl/my-training/wav/* ~/piper1-gpl/dataset/
 ```
 
+I used an external sound card made by behringer and a heil desktop microphone. 
+I chose the sound card to connect to the microphone in Sound Preferences. The levels
+were set pretty high, but I avoided clipping. The utility trims silence from
+the beginning and end. It also normalizes the wav file so all files have the
+same volume level.
+
 # Train the model
 Finally! The following command trains the voice model. You can tweak the 
 values in the training.yaml file, if needed. These values worked for me based
