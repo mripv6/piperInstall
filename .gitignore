@@ -1,40 +1,21 @@
-# =========================================
-# General temporary / system files
-# =========================================
-*.bak
-*.tmp
-*.swp
-*.log
-.DS_Store
-Thumbs.db
-
-# =========================================
-# Python and virtual environments
-# =========================================
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.egg-info/
-.eggs/
 .venv/
 venv/
-env/
-ENV/
 src/python/.venv/
 
-# =========================================
 # Build and package artifacts
-# =========================================
 build/
 dist/
 *.egg
 *.tar.gz
 *.zip
 
-# =========================================
-# Checkpoints, datasets, and large model files
-# =========================================
+# Checkpoints, datasets, and cache
 cache/
 lightning_logs/
 dataset/
@@ -45,19 +26,15 @@ audio_samples/
 *.pt
 *.pth
 
-# =========================================
-# Installer and local backups
-# =========================================
+# Installer / backups
 *_backup.*
-setup.sh.bak
 *.tar
 *.gz
 *.zip
 *.7z
 
-# =========================================
-# IDE / Editor settings
-# =========================================
+# IDE / Editor
 .vscode/
 .idea/
-*.code-workspace
+*.swp
+.DS_Store

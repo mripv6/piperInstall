@@ -21,7 +21,7 @@ echo "Adding deadsnakes PPA..."
 sudo add-apt-repository ppa:deadsnakes/ppa -y
 sudo apt update
 
-# Install all required packages in one command
+# Install all required packages
 echo "Installing all required packages..."
 sudo apt install -y \
     ffmpeg \
@@ -32,7 +32,8 @@ sudo apt install -y \
     python3.13-venv \
     python3.13-tk \
     cmake \
-    ninja-build
+    ninja-build \
+    wget
 
 echo "========================================="
 echo "System packages installed successfully!"
@@ -52,34 +53,35 @@ echo "========================================="
 echo "Repository cloned successfully!"
 echo "========================================="
 
-# Copy from arbitrary package directory ---
-echo "Copying utilities from package directory to ~/piper1-gpl..."
+# Copy all files from repository into ~/piper1-gpl, flattening the structure
+echo "Copying all repository files into ~/piper1-gpl (flattened)..."
 
-# Copy all contents (excluding .git and this script) into ~/piper1-gpl
-rsync -av --exclude='.git' --exclude='setup.sh' "$SCRIPT_DIR"/ ~/piper1-gpl/
+# Find all regular files excluding .git and install.sh
+find "$SCRIPT_DIR" -type f \
+    ! -path "$SCRIPT_DIR/.git/*" \
+    ! -name "install.sh" \
+    -exec cp -v {} ~/piper1-gpl/ \;
 
 echo "Files successfully copied to ~/piper1-gpl."
-# ----------------------------------------------------------
 
 # Change to the piper1-gpl directory
 cd ~/piper1-gpl
 
-# Create all required directories
-echo "Creating project directories..."
-mkdir -p ~/piper1-gpl/dataset
-mkdir -p ~/piper1-gpl/my-training
-mkdir -p ~/piper1-gpl/my-model
-mkdir -p ~/piper1-gpl/cache
-mkdir -p ~/piper1-gpl/audio_samples
-mkdir -p ~/piper1-gpl/lightning_logs/version_0/checkpoints
-
-echo "Directories created:"
-echo "  - dataset (for metadata and training wavs)"
-echo "  - my-training (for config.json)"
-echo "  - my-model (for model output)"
-echo "  - cache (cache directory)"
-echo "  - audio_samples (callback wav files during testing)"
-echo "  - lightning_logs/version_0/checkpoints (initial checkpoint file)"
+# Create all required directories 
+echo "Creating project directories..." 
+mkdir -p ~/piper1-gpl/dataset 
+mkdir -p ~/piper1-gpl/my-training 
+mkdir -p ~/piper1-gpl/my-model 
+mkdir -p ~/piper1-gpl/cache 
+mkdir -p ~/piper1-gpl/audio_samples 
+mkdir -p ~/piper1-gpl/lightning_logs/version_0/checkpoints 
+echo "Directories created:" 
+echo " - dataset (for metadata and training wavs)" 
+echo " - my-training (for config.json)" 
+echo " - my-model (for model output)" 
+echo " - cache (cache directory)" 
+echo " - audio_samples (callback wav files during testing)" 
+echo " - lightning_logs/version_0/checkpoints (initial checkpoint file)"
 
 # Create Python virtual environment
 echo "Creating Python 3.13 virtual environment..."
@@ -87,46 +89,56 @@ python3.13 -m venv src/python/.venv
 
 # Activate virtual environment
 echo "Activating virtual environment..."
-source ~/piper1-gpl/src/python/.venv/bin/activate
+source src/python/.venv/bin/activate
 
-# Install development dependencies
-echo "Installing development dependencies..."
-python -m pip install -e .[dev]
+# Install dependencies if requirements.txt exists
+if [ -f requirements.txt ]; then
+    echo "Installing Python dependencies..."
+    python -m pip install -r requirements.txt
+fi
 
-# Install training dependencies
-echo "Installing training dependencies..."
-python -m pip install -e .[train]
+# Install development and training dependencies if setup.py extras exist
+if [ -f setup.py ]; then
+    echo "Installing development dependencies..."
+    python -m pip install -e .[dev]
 
-# Build cython extensions
-echo "Building monotonic align extensions..."
-./build_monotonic_align.sh
+    echo "Installing training dependencies..."
+    python -m pip install -e .[train]
 
-# Build extensions in place
-echo "Building extensions in place..."
-python setup.py build_ext --inplace
+    # Build cython extensions
+    if [ -f scripts/build_monotonic_align.sh ]; then
+        echo "Building monotonic align extensions..."
+        bash scripts/build_monotonic_align.sh
+    fi
 
-# Build the package
-echo "Building the package..."
-python -m build
+    echo "Building extensions in place..."
+    python setup.py build_ext --inplace
+
+    echo "Building the package..."
+    python -m build
+fi
 
 # Install specific torch versions
 echo "Installing PyTorch 2.8.0 and torchaudio 2.8.0..."
 python -m pip install torch==2.8.0 torchaudio==2.8.0
 
 # Install sounddevice used by recording.py
-echo "Installing sounddevice"
+echo "Installing sounddevice..."
 python -m pip install sounddevice
 
 # Download checkpoint file from Hugging Face
+CHECKPOINT_DIR="src/piper/lightning_logs/version_0/checkpoints"
+mkdir -p "$CHECKPOINT_DIR"
 echo "Downloading checkpoint file from Hugging Face..."
-cd ~/piper1-gpl/lightning_logs/version_0/checkpoints
-wget https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/epoch%3D4641-step%3D3104302.ckpt
+wget -O "$CHECKPOINT_DIR/epoch_4641-step_3104302.ckpt" \
+    https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/epoch%3D4641-step%3D3104302.ckpt
 
 # Download config file from Hugging Face
+CONFIG_DIR="config"
+mkdir -p "$CONFIG_DIR"
 echo "Downloading config.json from Hugging Face..."
-cd ~/piper1-gpl/my-training
-wget https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/config.json
-
+wget -O "$CONFIG_DIR/config.json" \
+    https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/en/en_US/ryan/medium/config.json
 
 echo "========================================="
 echo "Setup Complete!"
