@@ -35,12 +35,22 @@ their help.
 If you get stuck, consult my extensive notes in docs/piper-stu.txt. There are little
 tidbits in there that may help.
 
-# Getting Started
+# Clone this Repo
 
-Clone this repository into your home directory. Then run the installation
-shell script.
+Use git to clone the repo. This will create a subdirectory called piperInstall with all
+the files you need.
 
 ```
+cd ~
+git clone https://github.com/mripv6/piperInstall.git
+```
+
+# Install the environment
+
+Run the installation shell script.
+
+```
+cd ~/piperInstall
 install.sh
 ```
 Running this file will take some time. It will require your sudo username and 
