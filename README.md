@@ -26,6 +26,11 @@ shell script.
 ```
 install.sh
 ```
+Running this file will take some time. It will require your sudo username and 
+password because it's installing several packages. After that no user interaction
+is requied. The script will also set up
+the right subdirectories, clone the repo, download the checkpoint files and setup
+the python environment.
 
 # Convert the epoch file
 This utility was built by PE1EEC. It converts the old ryan checkpoint file
