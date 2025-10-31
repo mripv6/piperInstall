@@ -1,0 +1,63 @@
+# =========================================
+# General temporary / system files
+# =========================================
+*.bak
+*.tmp
+*.swp
+*.log
+.DS_Store
+Thumbs.db
+
+# =========================================
+# Python and virtual environments
+# =========================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+src/python/.venv/
+
+# =========================================
+# Build and package artifacts
+# =========================================
+build/
+dist/
+*.egg
+*.tar.gz
+*.zip
+
+# =========================================
+# Checkpoints, datasets, and large model files
+# =========================================
+cache/
+lightning_logs/
+dataset/
+my-training/
+my-model/
+audio_samples/
+*.ckpt
+*.pt
+*.pth
+
+# =========================================
+# Installer and local backups
+# =========================================
+*_backup.*
+setup.sh.bak
+*.tar
+*.gz
+*.zip
+*.7z
+
+# =========================================
+# IDE / Editor settings
+# =========================================
+.vscode/
+.idea/
+*.code-workspace
