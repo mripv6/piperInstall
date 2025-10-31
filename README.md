@@ -3,10 +3,10 @@ Set up Piper Training Environment for N1MM
 
 # Introduction
 
-This script sets up the environment for recording, training, exporting 
+This project sets up the environment for recording, training, exporting 
 and testing the piper voice model. I decided to use python 3.13 and the GPL
 version of piper. The resulting voice model will be compatible
-with the MIT licensed version of piper used in N1MM. These scripts have
+with the MIT licensed version of piper used in N1MM+. These scripts have
 been tested under Linux Mint 22. They may work under other versions
 of linux and perhaps Windows WSL. 
 
