@@ -89,15 +89,25 @@ model should show up in the N1MM configuration after a N1MM restart. I use a USB
 # Files included:
 
 README.md              ; This file
+
 piper-stu.txt          ; Extensive notes on this project. Use for manual install.
+
 install.sh             ; Installation script
+
 checkpoint_convert.py  ; Convert old voice checkpoint files, may not need in future
+
 training.yaml          ; Training configuration file, edit as needed before training
+
 recording.py           ; Script to help record training wav files
+
 sentences.txt          ; Sentences used by recording script. Modify as necessary
+
 export_and_test.py     ; Export to onnx model and gather json file, then create a test wav file
+
 audio_logger_callback.py ; Experimental, used to send audio to tensor board
+
 debug_callback.py      ; Experimental. Used to debug callback functions during training
+
 say_something.py       ; Used to create a test wav file. Use after export.
 
 
