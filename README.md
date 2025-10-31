@@ -6,11 +6,17 @@ and testing the piper voice model. I decided to use python 3.13 and the GPL
 version of piper. The resulting voice model will be compatible
 with the MIT licensed version of piper used in N1MM. These scripts have
 been tested under Linux Mint 22. They may work under other versions
-of linux and perhaps Windows WSL.
+of linux and perhaps Windows WSL. 
 
-Training a model using 45 sentences takes about 45 minutes on my Linux computer, 
-which has a RTX4060TI GPU and 16 thread CPU. I decided to use more sentences
-than the standard 7 used by K3CT.
+Others are working on scripts to use with
+Windows 11, which probably makes more sense because N1MM also runs under Windows and
+users aren't likely to have multiple computers. I used my
+Linux computer because it has more horse power. Plus, I have some other AI based
+projects in mind. I considered using Docker, but decided to avoid the extra work.
+
+Training a model using 45-50 sentences takes about 45 minutes on my Linux computer, 
+which has a RTX 4060TI GPU and 16 thread CPU. I decided to use more sentences
+than the standard 7 used by K3CT. This is a work in progress. 
 
 Consult the file piper-stu.txt for detailed information. That file was started
 using the instuctions from K3CT. I modifed and added to the instructions as
@@ -21,7 +27,8 @@ and testing. Once satisfied, copy the voice model files to the PC where N1MM+ ru
 I need to thank Claude AI and ChatGPT for assistance! Claude was awesome for developing
 the scripts. I still had to troubleshoot, but it would have taken weeks for me
 to write them. Be careful with ChatGPT, it only remembers so far back into the chat.
-It will rewrite parts of the script that worked.
+It will rewrite parts of the script that worked. Also, thanks to K3CT and PE1EEC for
+their help.
 
 # Getting Started
 
