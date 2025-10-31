@@ -118,7 +118,8 @@ script.
 # Test the model
 Use the followig utility to export the voice model to onnx format, gather the
 config json file, rename the voice model files and develop a test wav file. ONNX
-is a standard format for voice models and stands fro Open Neural Network Exchange.
+is a standard format for voice models and stands fro Open Neural Network Exchange. There
+are other command line switches you can play with.
 
 ```
 python export_and_test.py --name w7iy \
