@@ -54,7 +54,7 @@ Run the installation shell script.
 cd ~/piperInstall
 ./install.sh
 ```
-Running this file will take a long time. You will need to enter your sudo  
+Running this file will take a long time. You will need to enter your sudo 
 password because it's installing several packages. After that no user interaction
 is requied. The script will also set up
 the right subdirectories, clone the repo, download the checkpoint files and setup
