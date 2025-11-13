@@ -152,6 +152,9 @@ config json file, rename the voice model files and develop a test wav file. ONNX
 is a standard format for voice models and stands fro Open Neural Network Exchange. There
 are other command line switches you can play with.
 
+Note - export_and_test.py will work under WSL. However, aplay will not. So you have
+to copy the test wav file somewhere under Windows to try.
+
 ```
 cd ~/piper1-gpl
 source ~/piper1-gpl/src/python/.venv/bin/activate"
@@ -164,7 +167,7 @@ aplay ./my-model/test_w7iy.wav
 After you run this script, you can create test wav files by modifying the 
 say_something.py script. Then run. This is a good example of using the voice
 model in a python script. The --name parameter comes from voice_name parameter
-in training.yaml.
+in training.yaml. (This doesn't work under WSL.)
 
 ```
 python say_something.py
