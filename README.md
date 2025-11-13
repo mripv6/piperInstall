@@ -11,22 +11,30 @@ been tested under Linux Mint 22 and Windows WSL Ubuntu (see note below.)
 
 Others are working on scripts to use with
 Windows 11, which probably makes more sense because N1MM also runs under Windows and
-users aren't likely to have multiple computers. I used my
-Linux computer because it has more horse power. Plus, I have some other AI based
-projects in mind. I considered using Docker, but decided to avoid the extra work.
+users aren't likely to have multiple computers. My linux computer has more horse power 
+and I have some other AI based projects in mind. 
 
-Consult the file piper-stu.txt for detailed information. I started with instructions
-from K3CT and built from there. Claude AI was a big help. I still had to troubleshoot, but it 
-would have taken weeks for me to write them from scratch. Also, thanks to PE1EEC 
-for his help and conversion script.
+Consult the file piper-stu.txt for detailed information. K3CT's instructions served
+as a starting point. Claude AI was a big help, but I still had to troubleshoot. It 
+would have taken weeks for me to write them from scratch. Thanks to PE1EEC 
+for his help and checkpoint conversion script.
 
 If you get stuck, consult my extensive notes in docs/piper-stu.txt. There are little
 tidbits in there that may help.
 
 A note about running under WSL - The installation script, checkpoint conversion script
 and the training command all work under WSL. The WAV recording utility does NOT without
-a lot of work. So you may want to use K3CT's recording script. If you do, the 
+a lot of work. So you may want to use K3CT's recording script or Audacity. If you do, the 
 wav directories are different. See the note in the recording section below.
+
+The basic steps are:
+
+- Clone the Repo
+- Install the environment
+- Convert the check point file
+- Record the wav files
+- Train the model
+- Test
 
 # Clone this Repo
 
@@ -52,7 +60,7 @@ is requied. The script will also set up
 the right subdirectories, clone the repo, download the checkpoint files and setup
 the python environment.
 
-# Convert the epoch file
+# Convert the checkpoint file
 This utility was built by PE1EEC. It converts the old ryan checkpoint file
 to a newer format. This utility may go away as piper gpl improves or different
 checkpoint files are created. The script will bring up a GUI. You will have two
