@@ -51,9 +51,9 @@ Run the installation shell script.
 
 ```
 cd ~/piperInstall
-install.sh
+./install.sh
 ```
-Running this file will take some time. It will require your sudo username and 
+Running this file will take a long time. It will require your sudo username and 
 password because it's installing several packages. After that no user interaction
 is requied. The script will also set up
 the right subdirectories, clone the repo, download the checkpoint files and setup
@@ -62,11 +62,16 @@ the python environment.
 # Convert the epoch file
 This utility was built by PE1EEC. It converts the old ryan checkpoint file
 to a newer format. This utility may go away as piper gpl improves or different
-checkpoint files are created. The script will bring up a GUI. Navigate to the
-checkpoint file under lightning_logs, version_0 and checkpoints. Select the 
-file. Then navigate back to the same directory to store the processed file.
+checkpoint files are created. The script will bring up a GUI. You will have two
+tasks. First, the app asks for the file to convert. Navigate to the 
+checkpoint file under lightning_logs/version_0/checkpoints. Select the 
+file. Second, set the target directory to /lightning_logs/version_0/checkpoints.
+Note, you have to change directory to piper1-gpl and activate the python
+virtual environment. (You'll see (.venv) before your linux prompt.
 
 ```
+cd ~/piper1-gpl
+source ~/piper1-gpl/src/python/.venv/bin/activate"
 python checkpoint_convert.py
 ```
 
