@@ -87,7 +87,13 @@ intuitive. You can delete wav files during the review. Run the script again
 to re-record missing files.
 
 ```
+cd ~/piper1-gpl
+source ~/piper1-gpl/src/python/.venv/bin/activate"
 python record.py
+```
+Once you're happy with all the WAV file recordings, copy them to the dataset
+subdirectory.
+```
 cp ~/piper1-gpl/my-training/wav/* ~/piper1-gpl/dataset/
 ```
 
@@ -110,7 +116,12 @@ values in the training.yaml file, if needed. These values worked for me based
 on info from Claude and the resources available in my system. The existing
 config file will training over 500 epochs, which takes my computer about 45 minutes.
 
+Note, you need to run the training from the piper1-gpl directory with the 
+python virtual environment activated.
+
 ```
+cd ~/piper1-gpl
+source ~/piper1-gpl/src/python/.venv/bin/activate"
 python -m piper.train fit --config training.yaml
 ```
 
@@ -127,6 +138,8 @@ is a standard format for voice models and stands fro Open Neural Network Exchang
 are other command line switches you can play with.
 
 ```
+cd ~/piper1-gpl
+source ~/piper1-gpl/src/python/.venv/bin/activate"
 python export_and_test.py --name w7iy \
   --text "CQ Contest! Whiskey 4 november fox, whiskey four november foxtrot!"
 
