@@ -1,5 +1,5 @@
 trainer:
-  accelerator: cuda
+  accelerator: cpu
   log_every_n_steps: 5
   precision: 16-mixed
   max_epochs: 5241
@@ -33,4 +33,4 @@ data:
 model:
   sample_rate: 22050
 
-ckpt_path: /data/home/stu/piper1-gpl/lightning_logs/version_0/checkpoints/processed-epoch=4641-step=3104302.ckpt
+ckpt_path: lightning_logs/version_0/checkpoints/processed-epoch_4641-step_3104302.ckpt
