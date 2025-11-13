@@ -7,7 +7,7 @@ This project sets up the environment for recording, training, exporting
 and testing the piper voice model. I decided to use python 3.13 and the GPL
 version of piper. The resulting voice model will be compatible
 with the MIT licensed version of piper used in N1MM+. These scripts have
-been tested under Linux Mint 22 and Windows WSL Ubuntu (see note below.) 
+been tested under Linux Mint 22 and Windows WSL Ubuntu 24. (See note below.) 
 
 Others are working on scripts to use with
 Windows 11, which probably makes more sense because N1MM also runs under Windows and
