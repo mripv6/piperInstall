@@ -107,9 +107,9 @@ if [ -f setup.py ]; then
     python -m pip install -e .[train]
 
     # Build cython extensions
-    if [ -f scripts/build_monotonic_align.sh ]; then
+    if [ -f build_monotonic_align.sh ]; then
         echo "Building monotonic align extensions..."
-        bash scripts/build_monotonic_align.sh
+        bash build_monotonic_align.sh
     fi
 
     echo "Building extensions in place..."
