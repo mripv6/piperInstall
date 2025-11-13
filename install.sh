@@ -33,6 +33,7 @@ sudo apt install -y \
     python3.13-tk \
     cmake \
     ninja-build \
+    libportaudio2 \
     wget
 
 echo "========================================="
@@ -127,7 +128,7 @@ echo "Installing sounddevice..."
 python -m pip install sounddevice
 
 # Download checkpoint file from Hugging Face
-CHECKPOINT_DIR="src/piper/lightning_logs/version_0/checkpoints"
+CHECKPOINT_DIR="lightning_logs/version_0/checkpoints"
 mkdir -p "$CHECKPOINT_DIR"
 echo "Downloading checkpoint file from Hugging Face..."
 wget -O "$CHECKPOINT_DIR/epoch_4641-step_3104302.ckpt" \
